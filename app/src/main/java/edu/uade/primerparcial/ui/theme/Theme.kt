@@ -1,6 +1,5 @@
 package edu.uade.primerparcial.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -21,20 +20,10 @@ private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
 )
-
+//uso composable para simplificar la construccion de todo lo que requiere la app en la vista
 @Composable
-fun PrimerParcialTheme(
+fun PokeComposeAPITheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
@@ -49,7 +38,7 @@ fun PrimerParcialTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-
+    //la maravilla de materialtheme
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
