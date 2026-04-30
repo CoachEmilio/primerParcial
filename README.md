@@ -4,7 +4,17 @@ LET THE GAMES BEGIN
 
 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgMhBRl2mtxehuaOj0gBpZ13cszM-0CC-D7aXfn7c43Y0yJnLMStnD8EBmdKBw_TE0IDHpsQizKUGMsya4Vy2KrH4JDGjVtWB5EMWCe38ItQAmUvN1r6P_0DwcYb6xz8q0CxgNb4-XvgcE/s1600/I'M+LOOKING+AT++YOU.jpg" alt="Logo" width="2000">
 
+<img src="https://www.pockettactics.com/wp-content/sites/pockettactics/2026/02/pokemon-sandslash.jpg" alt="Logo" width="2000">
+
 Parcial 1: Pokédex App — Android Kotlin 2026 📱
+
+<H1 align="center">
+	Romero Quirino, Luis Emilio
+</H1>
+
+<p align="center">
+	1203234 - Tecnicatura en Desarrollo Software
+</p>
 
 <p align="center">
 	<a href="https://shields.io"><img alt="Kotlin" src="https://img.shields.io/badge/-Kotlin-7F52FF?style=flat&logo=kotlin&logoColor=white"
