@@ -4,45 +4,66 @@ LET THE GAMES BEGIN
 
 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgMhBRl2mtxehuaOj0gBpZ13cszM-0CC-D7aXfn7c43Y0yJnLMStnD8EBmdKBw_TE0IDHpsQizKUGMsya4Vy2KrH4JDGjVtWB5EMWCe38ItQAmUvN1r6P_0DwcYb6xz8q0CxgNb4-XvgcE/s1600/I'M+LOOKING+AT++YOU.jpg" alt="Logo" width="2000">
 
-Emilio:
+Parcial 1: Pokédex App - Desarrollo de Aplicaciones I (2026)
+Este proyecto es la resolución del primer examen parcial de la materia. Se trata de una aplicación nativa desarrollada en Kotlin utilizando Jetpack Compose y Material 3, centrada en el consumo de la PokeAPI siguiendo una arquitectura profesional
+.
+🏗️ Arquitectura: MVVM + Repository
+La aplicación implementa de forma estricta la separación de responsabilidades para garantizar la escalabilidad y el testeo
+:
+Capa de Datos (Data): Contiene el modelo de dominio y el repositorio.
+Capa de Lógica (Logic/ViewModel): Gestiona el estado de la pantalla y procesa los eventos.
+Capa de Vista (UI): Funciones @Composable puras que reaccionan al estado
+.
+1. Modelo de Datos (Pokemon.kt)
+Se encapsuló la lógica de procesamiento dentro de la data class. Esto permite que la UI reciba los datos "masticados" y no tenga que realizar lógica de strings en el renderizado
+.
+// Ubicación: edu.uade.primerparcial.data.model.Pokemon.kt
+data class Pokemon(
+    val name: String,
+    val url: String
+) {
+    // Extraemos el ID desde la URL para manejar la navegación y sprites
+    val id: Int 
+        get() = url.trimEnd('/').split("/").last().toIntOrNull() ?: 0
 
-# Contexto de Evaluación: Proyecto Android Kotlin - UADE 2026
+    // URL dinámica para la carga de imágenes con Coil
+    val spriteUrl: String 
+        get() = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png"
 
-Este documento describe los estándares técnicos y arquitectónicos bajo los cuales el profesor evalúa los proyectos de Kotlin en Android Studio. Úsalo para auditar código, refactorizar y asegurar que se cumpla la "separación de responsabilidades".
-
-## 1. Arquitectura Mandatoria: MVVM + Repository
-El profesor no evalúa solo si la app "funciona", sino cómo está organizada [1, 2].
-*   **View (Composables):** Solo deben encargarse de mostrar el estado (`UI = f(state)`) y capturar eventos del usuario [3, 4].
-    *   *Criterio de Evaluación:* **PROHIBIDO** poner lógica de cálculo, validaciones o acceso a datos en el `onClick` de un botón [5, 6].
-*   **ViewModel:** Es el cerebro de la pantalla. Debe usar `StateFlow` o `mutableStateOf` para exponer el estado y `viewModelScope` para tareas asíncronas [7, 8].
-    *   *Criterio de Evaluación:* El ViewModel **NO** debe conocer clases de la UI como `Context` o `View` para evitar fugas de memoria [Model response history].
-*   **Repository:** Funciona como el "bibliotecario". Es el único que sabe si los datos vienen de una API (Retrofit), una base de datos (Room) o SharedPreferences [9, 10].
-
-## 2. Jetpack Compose y Material 3
-La interfaz debe ser **Declarativa** y seguir los principios de **Material Design 3** [11-13].
-*   **Encastre (Composición):** Se evalúa el uso de funciones pequeñas y reutilizables en lugar de un "God Composable" (una función gigante) [14, 15].
-*   **UDF (Unidirectional Data Flow):** El estado baja desde el ViewModel a los Composables; los eventos suben desde los Composables al ViewModel [16, 17].
-*   **Scaffold:** Es obligatorio usarlo para organizar la estructura de la pantalla (TopBar, FAB, padding automático) [18, 19].
-*   **State Hoisting:** El estado debe "elevarse" al llamador para que los componentes hijos sean *stateless* (sin estado interno), facilitando su testeo [20, 21].
-
-## 3. Manejo de Datos y Red
-*   **Retrofit:** Es la herramienta estándar para consumir APIs REST. Se evalúa que se use con interfaces de Kotlin y conversores GSON/Moshi [TP Integrador, 285].
-*   **Persistencia:**
-    *   Datos simples/configuración: `SharedPreferences` o `DataStore` [22, 23].
-    *   Datos estructurados: `Room` (abstracción sobre SQLite) [24, 25].
-*   **Internet:** Es mandatorio declarar los permisos en el `AndroidManifest.xml` [Model response history].
-
-## 4. Eficiencia y Runtime (Conceptos Teóricos de Examen)
-El profesor evalúa el entendimiento de cómo corre la app en el dispositivo [26]:
-*   **ART (Android Runtime):** Uso de compilación híbrida **AOT (Ahead-of-Time)** para mejorar la batería y el rendimiento, y **JIT (Just-in-Time)** para la flexibilidad en ejecución [27, 28].
-*   **Dalvik:** Identificarlo como el runtime antiguo (basado solo en JIT) ya deprecado [29, 30].
-*   **ARM vs x86:** Entender que Android está optimizado para arquitectura **ARM (RISC)** por su bajo consumo de energía [31, 32].
-
-## 5. "Red Flags" (Lo que baja nota)
-*   **Lógica en la Vista:** Cualquier cálculo matemático o regla de negocio dentro de un `@Composable` [5, 33].
-*   **Hardcoding:** No usar recursos (`strings.xml`) o no tipar correctamente los datos [1].
-*   **Falta de Nulabilidad (Null Safety):** No usar los operadores `?` o `?:` de Kotlin para prevenir cierres inesperados (ANR) [Model response history].
-*   **Ignorar el Ciclo de Vida:** No manejar la rotación de pantalla o la pérdida de datos cuando la Activity se pausa [34, 35].
-
----
-**Instrucción para Gemini:** "Al revisar mi código, prioriza detectar violaciones 
+    // Formateo de UI delegado al modelo
+    val nameFormatted: String 
+        get() = name.replaceFirstChar { it.uppercase() }
+}
+2. Capa de Datos: Repositorio
+El PokemonRepository actúa como la Single Source of Truth (Única Fuente de Verdad), aislando al resto de la app de si los datos vienen de una API (Retrofit) o de una lista fija
+.
+3. Capa de Lógica: ViewModel
+Utiliza StateFlow para exponer un flujo de datos unidireccional (UDF). El ViewModel no conoce clases de la UI como Context para evitar fugas de memoria
+.
+4. Capa de Vista: Jetpack Compose
+La interfaz es declarativa (UI = f(state)). Se utiliza el componente Scaffold para la estructura base y LazyColumn con key para una gestión eficiente de los recursos del sistema (batería y memoria)
+.
+// Ejemplo de implementación de lista eficiente
+LazyColumn(
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp)
+) {
+    items(items = pokemons, key = { it.id }) { pokemon ->
+        PokemonItem(pokemon = pokemon)
+    }
+}
+🛠️ Tecnologías y Librerías
+Jetpack Compose: Toolkit moderno para UI nativa
+.
+Retrofit & GSON: Consumo de servicios web REST y conversión de JSON a objetos Kotlin
+.
+Coil: Carga asíncrona de imágenes mediante AsyncImage
+.
+Material 3: Sistema de diseño con soporte para Dark Mode y accesibilidad
+.
+🚀 Cómo correr la app
+Sincronizar el proyecto con los archivos de Gradle.
+Asegurar que el archivo AndroidManifest.xml incluya el permiso de INTERNET: <uses-permission android:name="android.permission.INTERNET" />
+.
+Ejecutar en un emulador con arquitectura ARM64 o dispositivo físico para un rendimiento óptimo bajo el runtime ART
+.
